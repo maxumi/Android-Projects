@@ -1,0 +1,92 @@
+package com.example.myapplication;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.EditText;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class AddAccountActivity extends AppCompatActivity {
+    private EditText accountNameField, usernameField, passwordField;
+    private int editIndex = -1; // -1 means add, not edit
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_add_account);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        accountNameField = findViewById(R.id.editAccountName);
+        usernameField = findViewById(R.id.editUsername);
+        passwordField = findViewById(R.id.editPassword);
+
+        // Check if we're editing an existing account
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("accountIndex")) {
+            editIndex = intent.getIntExtra("accountIndex", -1);
+            String name = intent.getStringExtra("accountName");
+            String username = intent.getStringExtra("username");
+            String password = intent.getStringExtra("password");
+
+            accountNameField.setText(name);
+            usernameField.setText(username);
+            passwordField.setText(password);
+
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("Edit Account");
+            }
+        } else {
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle("Add Account");
+            }
+        }
+
+        findViewById(R.id.btnSave).setOnClickListener(v -> {
+            String name = accountNameField.getText().toString();
+            String user = usernameField.getText().toString();
+            String pass = passwordField.getText().toString();
+
+            // Creates dialogue menu
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Confirm")
+                    .setMessage("Do you want to save?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("accountName", name);
+                        resultIntent.putExtra("username", user);
+                        resultIntent.putExtra("password", pass);
+                        resultIntent.putExtra("accountIndex", editIndex); // -1 if it's a new account
+
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}

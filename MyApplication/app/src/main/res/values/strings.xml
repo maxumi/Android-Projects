@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="its_time">Its time</string>
+    <string name="is_it_time_for_lunch">Is it time for lunch</string>
+    <string name="enjoy_your_lunch">Enjoy your lunch</string>
+</resources>

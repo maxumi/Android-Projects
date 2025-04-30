@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Min applikation</string>
+    <string name="its_time">Det er tid</string>
+    <string name="is_it_time_for_lunch">Det er tid til frokost</string>
+    <string name="enjoy_your_lunch">Nyd din frokost</string>
+</resources>
