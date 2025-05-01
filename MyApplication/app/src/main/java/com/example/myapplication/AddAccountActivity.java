@@ -29,6 +29,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // getSupportActionBar means the top bar and makes it possible to go back
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -37,9 +38,10 @@ public class AddAccountActivity extends AppCompatActivity {
         usernameField = findViewById(R.id.editUsername);
         passwordField = findViewById(R.id.editPassword);
 
-        // Check if we're editing an existing account
+        // Check if we're editing an existing account. accountIndex means edit
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("accountIndex")) {
+            // If it can't find it get default value of 0
             editIndex = intent.getIntExtra("accountIndex", -1);
             String name = intent.getStringExtra("accountName");
             String username = intent.getStringExtra("username");

@@ -72,8 +72,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Gives the adapter the list to show.
         adapter = new AccountAdapter(AccountManager.accounts);
 
+        // setup recyclerView for adapter
         recyclerView = findViewById(R.id.recyclerViewAccounts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
