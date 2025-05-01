@@ -10,21 +10,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHolder> {
 
-    private List<Account> accountList;
+    // Original list given
+    private List<Account> originalList;
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
+    // A filtered version which copies from original
+    private List<Account> filteredList;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
         Button deleteButton;
         Button editButton;
         Button detailsButton;
+
         public ViewHolder(View view) {
             super(view);
             textView = view.findViewById(R.id.accountNameTextView);
@@ -39,23 +41,21 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     }
 
     public AccountAdapter(List<Account> accountList) {
-        this.accountList = accountList;
+        this.originalList = new ArrayList<>(accountList);
+        this.filteredList = new ArrayList<>(accountList);
     }
 
-    // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view, which defines the UI of the list item
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.text_row_item, viewGroup, false);
-
         return new ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Account account = accountList.get(position);
+        Account account = filteredList.get(position);
         viewHolder.getTextView().setText(account.getAccountName());
 
         viewHolder.deleteButton.setOnClickListener(v -> {
@@ -65,7 +65,9 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
                         .setTitle("Confirm Deletion")
                         .setMessage("Are you sure you want to delete this account?")
                         .setPositiveButton("Yes", (dialog, which) -> {
-                            accountList.remove(pos);
+                            Account toRemove = filteredList.get(pos);
+                            originalList.remove(toRemove);
+                            filteredList.remove(pos);
                             notifyItemRemoved(pos);
                         })
                         .setNegativeButton("No", null)
@@ -76,7 +78,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         viewHolder.detailsButton.setOnClickListener(v -> {
             int pos = viewHolder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
-                Account selectedAccount = accountList.get(pos);
+                Account selectedAccount = filteredList.get(pos);
                 Intent intent = new Intent(v.getContext(), AccountDetailsActivity.class);
                 intent.putExtra("account_name", selectedAccount.getAccountName());
                 intent.putExtra("username", selectedAccount.getUsername());
@@ -84,24 +86,51 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
                 v.getContext().startActivity(intent);
             }
         });
+
         viewHolder.editButton.setOnClickListener(v -> {
             int pos = viewHolder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
-                Account selectedAccount = accountList.get(pos);
+                Account selectedAccount = filteredList.get(pos);
+                int originalIndex = originalList.indexOf(selectedAccount);
                 Intent intent = new Intent(v.getContext(), AddAccountActivity.class);
-                intent.putExtra("accountIndex", pos);
-                intent.putExtra("accountName", account.getAccountName());
-                intent.putExtra("username", account.getUsername());
-                intent.putExtra("password", account.getPassword());
-
-                ((MainActivity)v.getContext()).editAccountLauncher.launch(intent); // Cast context for ActivityResultLauncher
+                intent.putExtra("accountIndex", originalIndex);
+                intent.putExtra("accountName", selectedAccount.getAccountName());
+                intent.putExtra("username", selectedAccount.getUsername());
+                intent.putExtra("password", selectedAccount.getPassword());
+                ((MainActivity) v.getContext()).editAccountLauncher.launch(intent);
             }
         });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // A filter function for adapter that changes original list to filtered
+    public void filter(String text) {
+        filteredList.clear();
+        if (text.isEmpty()) {
+            filteredList.addAll(originalList);
+        } else {
+            text = text.toLowerCase();
+            for (Account account : originalList) {
+                if (account.getAccountName().toLowerCase().contains(text) ||
+                        account.getUsername().toLowerCase().contains(text)) {
+                    filteredList.add(account);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+    // Used to refresh list as it only uses a copy
+    public void refresh(List<Account> newList) {
+        originalList.clear();
+        originalList.addAll(newList);
+
+        filteredList.clear();
+        filteredList.addAll(newList);
+
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return accountList.size();
+        return filteredList.size();
     }
 }

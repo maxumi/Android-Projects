@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
@@ -37,6 +38,18 @@ public class AddAccountActivity extends AppCompatActivity {
         accountNameField = findViewById(R.id.editAccountName);
         usernameField = findViewById(R.id.editUsername);
         passwordField = findViewById(R.id.editPassword);
+        // Adds a checkbox that shows password
+        CheckBox showPasswordCheck = findViewById(R.id.checkShowPassword);
+
+        showPasswordCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                passwordField.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            } else {
+                passwordField.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+            passwordField.setSelection(passwordField.getText().length()); // move cursor to end
+        });
+
 
         // Check if we're editing an existing account. accountIndex means edit
         Intent intent = getIntent();

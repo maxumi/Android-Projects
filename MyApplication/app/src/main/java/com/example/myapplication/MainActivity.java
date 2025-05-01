@@ -2,9 +2,12 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Account newAccount = new Account(name, user, pass);
                         AccountManager.accounts.add(newAccount);
-                        adapter.notifyItemInserted(AccountManager.accounts.size() - 1);
+                        adapter.refresh(AccountManager.accounts);
                     }
                 }
             });
@@ -54,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
                         if (index >= 0 && index < AccountManager.accounts.size()) {
                             Account updatedAccount = new Account(name, user, pass);
                             AccountManager.accounts.set(index, updatedAccount);
-                            adapter.notifyItemChanged(index);
+                            // refrsh is needed so list inside of it is also updated
+                            adapter.refresh(AccountManager.accounts);
                         }
                     }
                 }
@@ -84,6 +88,21 @@ public class MainActivity extends AppCompatActivity {
             addAccountLauncher.launch(new Intent(this, AddAccountActivity.class));
 
         });
+
+        EditText searchField = findViewById(R.id.editSearch);
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
     }
 
     @Override

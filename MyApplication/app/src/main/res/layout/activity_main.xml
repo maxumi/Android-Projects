@@ -12,12 +12,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Accounts"
             android:textSize="24sp"
             android:padding="16dp" />
+        <EditText
+            android:id="@+id/editSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search accounts"
+            android:inputType="text"
+            android:padding="12dp"
+            android:drawableStart="@android:drawable/ic_menu_search" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewAccounts"

@@ -36,6 +36,11 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword" />
+    <CheckBox
+        android:id="@+id/checkShowPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Password" />
 
     <Button
         android:id="@+id/btnSave"
