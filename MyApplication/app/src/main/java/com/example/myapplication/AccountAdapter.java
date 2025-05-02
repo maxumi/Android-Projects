@@ -21,8 +21,13 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     // A filtered version which copies from original
     private List<Account> filteredList;
 
+    // An interface that holds functions for buttons
+    // Main will create overide functions for it.
+    private OnAccountActionListener listener;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
+        // Buttons
         Button deleteButton;
         Button editButton;
         Button detailsButton;
@@ -40,9 +45,10 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         }
     }
 
-    public AccountAdapter(List<Account> accountList) {
+    public AccountAdapter(List<Account> accountList, OnAccountActionListener listener) {
         this.originalList = new ArrayList<>(accountList);
         this.filteredList = new ArrayList<>(accountList);
+        this.listener = listener;
     }
 
     @NonNull
@@ -66,9 +72,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
                         .setMessage("Are you sure you want to delete this account?")
                         .setPositiveButton("Yes", (dialog, which) -> {
                             Account toRemove = filteredList.get(pos);
-                            originalList.remove(toRemove);
-                            filteredList.remove(pos);
-                            notifyItemRemoved(pos);
+                            listener.onDelete(toRemove);
                         })
                         .setNegativeButton("No", null)
                         .show();
@@ -80,9 +84,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
             if (pos != RecyclerView.NO_POSITION) {
                 Account selectedAccount = filteredList.get(pos);
                 Intent intent = new Intent(v.getContext(), AccountDetailsActivity.class);
-                intent.putExtra("account_name", selectedAccount.getAccountName());
-                intent.putExtra("username", selectedAccount.getUsername());
-                intent.putExtra("password", selectedAccount.getPassword());
+                intent.putExtra("account", selectedAccount);
                 v.getContext().startActivity(intent);
             }
         });
@@ -92,14 +94,10 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
             if (pos != RecyclerView.NO_POSITION) {
                 Account selectedAccount = filteredList.get(pos);
                 int originalIndex = originalList.indexOf(selectedAccount);
-                Intent intent = new Intent(v.getContext(), AddAccountActivity.class);
-                intent.putExtra("accountIndex", originalIndex);
-                intent.putExtra("accountName", selectedAccount.getAccountName());
-                intent.putExtra("username", selectedAccount.getUsername());
-                intent.putExtra("password", selectedAccount.getPassword());
-                ((MainActivity) v.getContext()).editAccountLauncher.launch(intent);
+                listener.onEdit(selectedAccount, originalIndex);
             }
         });
+
     }
 
     // A filter function for adapter that changes original list to filtered

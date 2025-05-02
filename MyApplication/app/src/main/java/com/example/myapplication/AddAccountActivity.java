@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class AddAccountActivity extends AppCompatActivity {
     private EditText accountNameField, usernameField, passwordField;
+
     private int editIndex = -1; // -1 means add, not edit
 
     @Override
@@ -53,21 +54,21 @@ public class AddAccountActivity extends AppCompatActivity {
 
         // Check if we're editing an existing account. accountIndex means edit
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("accountIndex")) {
-            // If it can't find it get default value of 0
+        if (intent != null && intent.hasExtra("account")) {
+            Account account = (Account) intent.getSerializableExtra("account");
             editIndex = intent.getIntExtra("accountIndex", -1);
-            String name = intent.getStringExtra("accountName");
-            String username = intent.getStringExtra("username");
-            String password = intent.getStringExtra("password");
 
-            accountNameField.setText(name);
-            usernameField.setText(username);
-            passwordField.setText(password);
+            if (account != null) {
+                accountNameField.setText(account.getAccountName());
+                usernameField.setText(account.getUsername());
+                passwordField.setText(account.getPassword());
 
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle("Edit Account");
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setTitle("Edit Account");
+                }
             }
-        } else {
+        }
+        else {
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle("Add Account");
             }
@@ -84,10 +85,9 @@ public class AddAccountActivity extends AppCompatActivity {
                     .setMessage("Do you want to save?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         Intent resultIntent = new Intent();
-                        resultIntent.putExtra("accountName", name);
-                        resultIntent.putExtra("username", user);
-                        resultIntent.putExtra("password", pass);
-                        resultIntent.putExtra("accountIndex", editIndex); // -1 if it's a new account
+                        Account account = new Account(name, user, pass);
+                        resultIntent.putExtra("account", account);
+                        resultIntent.putExtra("accountIndex", editIndex);
 
                         setResult(RESULT_OK, resultIntent);
                         finish();

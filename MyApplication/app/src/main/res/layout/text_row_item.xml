@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:gravity="center_vertical">
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_weight="1"
@@ -25,11 +24,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Details" />
+
     <Button
         android:id="@+id/btnEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit" />
+        android:text="Edit"
+        android:layout_marginStart="8dp" />
 
     <Button
         android:id="@+id/btnDelete"
@@ -37,5 +38,7 @@
         android:layout_height="wrap_content"
         android:text="Delete"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#FF0000" />
+        android:backgroundTint="#FF0000"
+        android:layout_marginStart="8dp" />
+
 </LinearLayout>

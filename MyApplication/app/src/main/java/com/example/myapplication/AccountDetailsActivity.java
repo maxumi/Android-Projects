@@ -43,14 +43,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
         passwordTextView = findViewById(R.id.passwordTextView);
 
         // Get data from Intent
-        Intent intent = getIntent();
-        String accountName = intent.getStringExtra("account_name");
-        String username = intent.getStringExtra("username");
-        String password = intent.getStringExtra("password");
+        Account account = (Account) getIntent().getSerializableExtra("account");
+        if (account != null) {
+            accountNameTextView.setText(account.getAccountName());
+            usernameTextView.setText(account.getUsername());
+            passwordTextView.setText(account.getPassword());
+        }
 
-        accountNameTextView.setText(accountName);
-        usernameTextView.setText(username);
-        passwordTextView.setText(password);
 
     }
     @Override
