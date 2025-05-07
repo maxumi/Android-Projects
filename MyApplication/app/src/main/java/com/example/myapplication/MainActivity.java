@@ -32,11 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AccountAdapter adapter;
 
-    // Static for performance
+    // Old code
+    /*
     private static final Gson GSON = new Gson();
     private static final Type ACCOUNT_LIST_TYPE =
             new TypeToken<ArrayList<Account>>(){}.getType();
-    private static final String  ACCOUNTS_KEY = "account_list";
+    private static final String  ACCOUNTS_KEY = "account_list";*/
     private static final String PIN_CODE = "12345";
     // Launcher and Method that controls how data returned is handled for creating new password
     private final ActivityResultLauncher<Intent> addAccountLauncher =
@@ -50,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
                         Account newAccount = (Account) data.getSerializableExtra("account");
                         if (newAccount != null) {
-                            AccountManager.getInstance().getAccounts().add(newAccount);
+                            AccountManager.getInstance().addAccount(newAccount, this);
                             adapter.refresh(AccountManager.getInstance().getAccounts());
-                            saveAccounts();
+                            AccountManager.getInstance().save(this);
                             // Toast for flavor
                             Toast.makeText(this, "Account added", Toast.LENGTH_SHORT).show();  // <-- Added
                         }
@@ -69,9 +70,11 @@ public class MainActivity extends AppCompatActivity {
                         Account updatedAccount = (Account) data.getSerializableExtra("account");
                         int index = data.getIntExtra("accountIndex", -1);
 
-                        if (updatedAccount != null && index >= 0 && index < AccountManager.getInstance().getAccounts().size()) {
-                            AccountManager.getInstance().getAccounts().set(index, updatedAccount);
-                            adapter.refresh(AccountManager.getInstance().getAccounts());
+                        if (updatedAccount != null && index >= 0) {
+                            boolean success = AccountManager.getInstance().updateAccount(index, updatedAccount, this);
+                            if (success) {
+                                adapter.refresh(AccountManager.getInstance().getAccounts());
+                            }
                         }
                     }
                 }
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Prompt PIN before initializing the rest
+        // Prompt PIN
         EditText pinInput = new EditText(this);
         pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
@@ -108,14 +111,14 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
     private void initApp() {
-        loadAccounts();
+        AccountManager.getInstance().load(this);
 
         adapter = new AccountAdapter(AccountManager.getInstance().getAccounts(), new OnAccountActionListener() {
             @Override
             public void onDelete(Account account) {
                 AccountManager.getInstance().getAccounts().remove(account);
                 adapter.refresh(AccountManager.getInstance().getAccounts());
-                saveAccounts();
+                AccountManager.getInstance().save(MainActivity.this);
                 Toast.makeText(MainActivity.this, "Account deleted", Toast.LENGTH_SHORT).show();
             }
 
@@ -145,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) {}
         });
     }
+
+    /*
     private void saveAccounts() {
         SharedPreferences  prefs = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -162,4 +167,5 @@ public class MainActivity extends AppCompatActivity {
             AccountManager.getInstance().getAccounts().addAll(loadedAccounts);
         }
     }
+    */
 }

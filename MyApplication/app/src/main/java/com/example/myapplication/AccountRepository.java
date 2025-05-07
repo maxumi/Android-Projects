@@ -7,35 +7,33 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountManager {
+public class AccountRepository {
+
     String url = "http://10.131.202.230:8080/api/accounts";
     RequestQueue queue;
 
     private static final String PREF_NAME = "account_prefs";
     private static final String ACCOUNTS_KEY = "account_list";
 
-    private static AccountManager instance;
+    private static AccountRepository instance;
     private ArrayList<Account> accounts;
     private final Gson gson = new Gson();
     private final Type ACCOUNT_LIST_TYPE = new TypeToken<ArrayList<Account>>() {}.getType();
 
-    private AccountManager() {
+    private AccountRepository() {
         accounts = new ArrayList<>();
     }
 
-    public static synchronized AccountManager getInstance() {
+    public static synchronized AccountRepository getInstance() {
         if (instance == null) {
-            instance = new AccountManager();
+            instance = new AccountRepository();
         }
         return instance;
     }
